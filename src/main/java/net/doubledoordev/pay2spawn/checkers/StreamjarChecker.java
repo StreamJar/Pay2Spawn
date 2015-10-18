@@ -67,6 +67,7 @@ public class StreamjarChecker extends AbstractChecker implements Runnable
     boolean enabled  = false;
     int     interval = 5;
     String  APIKey   = "";
+    boolean test = false;
 
     private StreamjarChecker()
     {
@@ -101,6 +102,7 @@ public class StreamjarChecker extends AbstractChecker implements Runnable
         enabled = configuration.get(CAT, "enabled", enabled).getBoolean(enabled);
         APIKey = configuration.get(CAT, "APIKey", APIKey).getString();
         interval = configuration.get(CAT, "interval", interval, "The time in between polls minimum 5 (in seconds).").getInt();
+        test = configuration.get(CAT, "test", test, "Is test mode enabled? This option will allow test donations to spawn rewards").getBoolean(test);
         min_donation = configuration.get(CAT, "min_donation", min_donation, "Donations below this amount will only be added to statistics and will not spawn rewards").getDouble();
 
         recentDonationsBasedHudEntry = new DonationsBasedHudEntry("recent" + NAME + ".txt", CAT + ".recentDonations", -1, 2, 5, "$name: $$amount", "-- Recent donations --", CheckerHandler.RECENT_DONATION_COMPARATOR);
@@ -129,6 +131,16 @@ public class StreamjarChecker extends AbstractChecker implements Runnable
             processDonationAPI(false);
         }
     }
+    /**
+    *Passes the URL with or without test tag
+    */
+    private String getURL() {
+      if (test == true){
+        return URL + "&test=true";
+      }else{
+        return URL;
+      }
+    }
 
     /**
      * Connects to the API and attempt to process any donations
@@ -139,7 +151,7 @@ public class StreamjarChecker extends AbstractChecker implements Runnable
     {
         try
         {
-            JsonArray donations = JSON_PARSER.parse(Helper.readUrl(new URL(String.format(URL, APIKey)), new String[]{"User-Agent", "Mozilla/5.0 (compatible; Pay2Spawn)"})).getAsJsonArray();
+            JsonArray donations = JSON_PARSER.parse(Helper.readUrl(new URL(String.format(getURL(), APIKey)), new String[]{"User-Agent", "Mozilla/5.0 (compatible; Pay2Spawn)"})).getAsJsonArray();
             for (JsonElement jsonElement : donations)
             {
                 Donation donation = getDonation(jsonElement.getAsJsonObject());
