@@ -60,6 +60,7 @@ public class Trackers
     static
     {
         register(StreamLabsTracker.INSTANCE);
+        register(StreamJarTracker.INSTANCE);
 
         FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable()
         {

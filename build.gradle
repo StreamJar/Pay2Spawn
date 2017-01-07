@@ -81,10 +81,14 @@ repositories {
 configurations {
     embed
     compile.extendsFrom(embed)
+    sio
 }
 
 dependencies {
     embed "com.googlecode.soundlibs:jlayer:1.0.1.4"
+    sio "io.socket:socket.io-client:0.6.3"
+    sio "io.socket:engine.io-client:0.6.3"
+    compile configurations.sio
 }
 
 processResources {
@@ -156,12 +160,13 @@ sourceJar {
     from { configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }}
 }
 jar {
-    exclude("com/**")
+    // exclude("com/**")
     appendix = project.minecraft.version
     manifest {
         attributes 'FMLCorePluginContainsFMLMod': 'true', 'FMLCorePlugin': 'net.doubledoordev.pay2spawn.asm.Plugin'
     }
     from { configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }}
+    from ( configurations.sio.collect { it.isDirectory() ? it : zipTree(it)}) { exclude 'META-INF/**' }
 }
 
 artifacts {
