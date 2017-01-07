@@ -95,7 +95,7 @@ public class StreamJarTracker extends Tracker
         IO.Options opts = new IO.Options();
         opts.transports = new String[]{"websocket"};
         try {
-            socket = IO.socket("http://127.0.0.1:8080", opts);
+            socket = IO.socket("https://jar.streamjar.tv", opts);
             registerListeners();
             socket.connect();
         } catch(URISyntaxException e) {
